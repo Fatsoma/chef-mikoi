@@ -15,6 +15,5 @@ database:
 
 test:
   override:
-    - bundle exec foodcritic .:
-        timeout: 240
+    - bundle exec foodcritic --progress .
     - bundle exec rspec --colour --require rspec_junit_formatter --require spec_helper --format documentation --format RspecJunitFormatter --out $CIRCLE_TEST_REPORTS/rspec/junit.xml spec
