@@ -16,4 +16,9 @@ describe 'mikoi::go' do
   it { is_expected.to include_recipe('golang') }
 
   it { is_expected.to install_golang_package('github.com/nabeken/mikoi') }
+
+  it do
+    is_expected.to create_link('/usr/local/bin/mikoi')
+      .with_to('/opt/go/bin/mikoi')
+  end
 end
