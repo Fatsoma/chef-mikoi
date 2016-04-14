@@ -1,14 +1,26 @@
 mikoi Cookbook
-============================
+==============
 Use [mikoi](https://github.com/nabeken/mikoi) to enable making requests to a server with [HAProxy's Proxy Protocol](http://www.haproxy.org/download/1.5/doc/proxy-protocol.txt).
 
 Requirements
 ------------
-TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
 
-e.g.
+#### Chef
+Tested with 11.16.4.
+Should work with Chef 12
+
 #### cookbooks
-- `golang` - installs go programming language
+- `golang` - installs go programming language (only needed for `['mikoi']['install_method'] == 'go'`)
+
+#### Platform
+Tested on Ubuntu 14.04. Other linux distributions should all work out of the box.
+
+Working on freebsd except for go install (as not supported by [golang cookbook](https://github.com/NOX73/chef-golang))
+
+Windows and Mac OS X versions of mikoi have been included but no promises made as to whether they will work. For Windows you will likely need to set `['mikoi']['install_dir']`
+
+#### Ruby
+MRI Ruby >= 1.9
 
 Attributes
 ----------
@@ -27,7 +39,7 @@ Attributes
     <td>Install method:
       <ol>
         <li><tt>release</tt> to install from binary release</li>
-        <li><tt>go</tt> to install using <tt>go get</tt></li>
+        <li><tt>go</tt> to install using Go</li>
       </ol>
     </td>
     <td><tt>release</tt></td>
