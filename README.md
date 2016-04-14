@@ -66,31 +66,58 @@ Attributes
 
 Usage
 -----
-#### mikoi::default
+### mikoi::default
 Installs mikoi go package.
 
 Just include `mikoi` in your node's `run_list`:
 
 ```json
 {
-  "name":"my_node",
+  "name": "my_node",
   "run_list": [
     "recipe[mikoi]"
   ]
 }
 ```
 
-#### Resource
-Use the custom resource `mikoi_proxy` to wrap other resources to be run while
-the proxy is running.
+Resources
+---------
+
+### mikoi_execute
+Run a command through mikoi. Make sure your command has at least one port placeholder (`{}`).
 
 ```ruby
-mikoi_proxy 'name' do
-  block do
-    execute %q(curl 'localhost:{port}')
-  end
+mikoi_execute 'name' do
+  command %q(curl -H 'Host: example.com' 'localhost:{}/status')
+  hostname 'example.com'
+  port 80
+  proxy_protocol true
 end
 ```
+
+#### Actions
+Action | Description | Default
+------ |------------ |--------
+run    | Run command | Yes
+
+#### Attributes
+
+Attribute       | Description | Type | Default
+---------       |------------ |----- |--------
+hostname        | The hostname for mikoi to connect to | String
+port            | The hostname for mikoi to connect to | String, Integer
+proxy_timeout   | The timeout for mikoi, including units as understood by Go [`time.Duration`](https://golang.org/pkg/time/#Duration) | String | `10s`
+proxy_protocol  | Use Proxy Protocol | Boolean | `false`
+verbose         | Make mikoi verbose | Boolean | `false`
+command         | The command to be executed. Must contain at least one placeholder `{}` for the ephemeral port | String, Array | (name attribute)
+creates         | Prevent command from running if this file exists | String |
+cwd             | The current working directory from which a command is run. | String |
+environment     | A hash of environment variables. | Hash
+group           | The group name or group ID that must be changed before running a command | String, Integer
+returns         | The return value for a command. This may be an array of accepted values. An exception is raised when the return value(s) do not match | Integer, Array
+command_timeout | The amount of time (in seconds) a command will wait before timing out | Integer
+user            | The user name or user ID that should be changed before running a command | String, Integer
+umask           | The file mode creation mask, or umask | String, Integer
 
 Testing
 -------
