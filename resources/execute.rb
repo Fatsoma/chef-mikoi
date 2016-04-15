@@ -4,7 +4,7 @@ default_action :run
 # Mikoi attributes
 attribute :hostname, kind_of: String
 attribute :port, kind_of: [String, Integer]
-attribute :proxy_timeout, kind_of: String, default: '10s'
+attribute :proxy_timeout, kind_of: String
 attribute :proxy_protocol, kind_of: [TrueClass, FalseClass], default: false
 attribute :verbose, kind_of: [TrueClass, FalseClass], default: false
 
