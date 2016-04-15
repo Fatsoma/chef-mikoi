@@ -1,14 +1,26 @@
 mikoi Cookbook
-============================
+==============
 Use [mikoi](https://github.com/nabeken/mikoi) to enable making requests to a server with [HAProxy's Proxy Protocol](http://www.haproxy.org/download/1.5/doc/proxy-protocol.txt).
 
 Requirements
 ------------
-TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
 
-e.g.
+#### Chef
+Tested with 11.16.4.
+Should work with Chef 12
+
 #### cookbooks
-- `golang` - installs go programming language
+- `golang` - installs go programming language (only needed for `['mikoi']['install_method'] == 'go'`)
+
+#### Platform
+Tested on Ubuntu 14.04. Other linux distributions should all work out of the box.
+
+Working on freebsd except for go install (as not supported by [golang cookbook](https://github.com/NOX73/chef-golang))
+
+Windows and Mac OS X versions of mikoi have been included but no promises made as to whether they will work. For Windows you will likely need to set `['mikoi']['install_dir']`
+
+#### Ruby
+MRI Ruby >= 1.9
 
 Attributes
 ----------
@@ -27,7 +39,7 @@ Attributes
     <td>Install method:
       <ol>
         <li><tt>release</tt> to install from binary release</li>
-        <li><tt>go</tt> to install using <tt>go get</tt></li>
+        <li><tt>go</tt> to install using Go</li>
       </ol>
     </td>
     <td><tt>release</tt></td>
@@ -64,37 +76,125 @@ Attributes
   </tr>
 </table>
 
+#### mikoi::execute
+Add a Hash of attributes supported by `mikoi_execute` resource for as many as you want to run (they will be looped through in one run). For example (see below for full list of attributes supported by `mikoi_execute`):
+
+```json
+{
+  "name": "my_node",
+  "run_list": [
+    "recipe[mikoi]",
+    "recipe[mikoi::execute]"
+  ],
+  "mikoi": {
+    "execute": {
+      "my_command": {
+        "hostname": "example.com",
+        "port": "8080",
+        "proxy_protocol": true,
+        "command": "curl -f -H 'Host: example.com' localhost:{}/test"
+      }
+    }
+  }
+}
+```
+
+For more freedom, use the `mikoi_execute` resource directly.
+
 Usage
 -----
-#### mikoi::default
+### mikoi::default
 Installs mikoi go package.
 
 Just include `mikoi` in your node's `run_list`:
 
 ```json
 {
-  "name":"my_node",
+  "name": "my_node",
   "run_list": [
     "recipe[mikoi]"
   ]
 }
 ```
 
-#### Resource
-Use the custom resource `mikoi_proxy` to wrap other resources to be run while
-the proxy is running.
+Resources
+---------
+
+### mikoi_execute
+Run a command through mikoi. Make sure your command has at least one port placeholder (`{}`).
 
 ```ruby
-mikoi_proxy 'name' do
-  block do
-    execute %q(curl 'localhost:{port}')
-  end
+mikoi_execute 'name' do
+  command %q(curl -H 'Host: example.com' 'localhost:{}/status')
+  hostname 'example.com'
+  port 80
+  proxy_protocol true
 end
 ```
 
+#### Actions
+Action | Description | Default
+------ |------------ |--------
+run    | Run command | Yes
+
+#### Attributes
+
+Attribute       | Description | Type | Default
+---------       |------------ |----- |--------
+hostname        | The hostname for mikoi to connect to *(Required)* | String
+port            | The hostname for mikoi to connect to *(Required)* | String, Integer
+proxy_timeout   | The timeout for mikoi, including units as understood by Go [`time.Duration`](https://golang.org/pkg/time/#Duration) | String | `10s`
+proxy_protocol  | Use Proxy Protocol | Boolean | `false`
+verbose         | Make mikoi verbose | Boolean | `false`
+command         | The command to be executed. Must contain at least one placeholder `{}` for the ephemeral port | String, Array | (name attribute)
+creates         | Prevent command from running if this file exists | String |
+cwd             | The current working directory from which a command is run. | String |
+environment     | A hash of environment variables. | Hash
+group           | The group name or group ID that must be changed before running a command | String, Integer
+returns         | The return value for a command. This may be an array of accepted values. An exception is raised when the return value(s) do not match | Integer, Array
+command_timeout | The amount of time (in seconds) a command will wait before timing out | Integer
+user            | The user name or user ID that should be changed before running a command | String, Integer
+umask           | The file mode creation mask, or umask | String, Integer
+
 Testing
 -------
-This project uses foodcritic and chefspec, both of which can be run through guard. Integration tests use kitchen.
+### Unit tests and lint
+This project uses foodcritic and chefspec, both of which can be run through guard.
+
+Please check for resource coverage by setting `COVERAGE` env variable, e.g.:
+
+```sh
+COVERAGE=true bundle exec guard
+```
+### Integration tests
+Integration tests use test-kitchen. Follow the [getting started guide](http://kitchen.ci/docs/getting-started/)
+
+Brief sample usage:
+
+```sh
+# Help
+bundle exec kitchen help
+
+# List all available test suites / platform variations
+bundle exec kitchen list
+
+# Test (destroy, converge and verify) without destroying after testing
+bundle exec kitchen test -d never release-ubuntu-*
+
+# manually inspect state of machine
+bundle exec kitchen login release-ubuntu-*
+
+# re-converge and verify
+bundle exec kitchen converge release-ubuntu-* && \
+  bundle exec kitchen verify release-ubuntu-*
+
+# destroy when you are done
+bundle exec kitchen destroy
+```
+
+#### Debugging
+
+Debugging custom resources seems to be impossible using chef-shell in solo mode. Instead, use chef-shell in client mode with chef-zero as per [this script](https://gist.github.com/biinari/41ddc6eced8f1c42c00a7b0c98b9e868). Provide the run list as first argument to the script or set RUNLIST variable and copy/paste the commands from `cd /tmp/kitchen/` onwards.
 
 Contributing
 ------------
