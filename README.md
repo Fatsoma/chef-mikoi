@@ -133,7 +133,43 @@ umask           | The file mode creation mask, or umask | String, Integer
 
 Testing
 -------
-This project uses foodcritic and chefspec, both of which can be run through guard. Integration tests use kitchen.
+### Unit tests and lint
+This project uses foodcritic and chefspec, both of which can be run through guard.
+
+Please check for resource coverage by setting `COVERAGE` env variable, e.g.:
+
+```sh
+COVERAGE=true bundle exec guard
+```
+### Integration tests
+Integration tests use test-kitchen. Follow the [getting started guide](http://kitchen.ci/docs/getting-started/)
+
+Brief sample usage:
+
+```sh
+# Help
+bundle exec kitchen help
+
+# List all available test suites / platform variations
+bundle exec kitchen list
+
+# Test (destroy, converge and verify) without destroying after testing
+bundle exec kitchen test -d never release-ubuntu-*
+
+# manually inspect state of machine
+bundle exec kitchen login release-ubuntu-*
+
+# re-converge and verify
+bundle exec kitchen converge release-ubuntu-* && \
+  bundle exec kitchen verify release-ubuntu-*
+
+# destroy when you are done
+bundle exec kitchen destroy
+```
+
+#### Debugging
+
+Debugging custom resources seems to be impossible using chef-shell in solo mode. Instead, use chef-shell in client mode with chef-zero as per [this script](https://gist.github.com/biinari/41ddc6eced8f1c42c00a7b0c98b9e868). Provide the run list as first argument to the script or set RUNLIST variable and copy/paste the commands from `cd /tmp/kitchen/` onwards.
 
 Contributing
 ------------
