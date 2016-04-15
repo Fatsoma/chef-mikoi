@@ -141,8 +141,8 @@ run    | Run command | Yes
 
 Attribute       | Description | Type | Default
 ---------       |------------ |----- |--------
-hostname        | The hostname for mikoi to connect to | String
-port            | The hostname for mikoi to connect to | String, Integer
+hostname        | The hostname for mikoi to connect to *(Required)* | String
+port            | The hostname for mikoi to connect to *(Required)* | String, Integer
 proxy_timeout   | The timeout for mikoi, including units as understood by Go [`time.Duration`](https://golang.org/pkg/time/#Duration) | String | `10s`
 proxy_protocol  | Use Proxy Protocol | Boolean | `false`
 verbose         | Make mikoi verbose | Boolean | `false`
