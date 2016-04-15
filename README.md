@@ -76,6 +76,31 @@ Attributes
   </tr>
 </table>
 
+#### mikoi::execute
+Add a Hash of attributes supported by `mikoi_execute` resource for as many as you want to run (they will be looped through in one run). For example (see below for full list of attributes supported by `mikoi_execute`):
+
+```json
+{
+  "name": "my_node",
+  "run_list": [
+    "recipe[mikoi]",
+    "recipe[mikoi::execute]"
+  ],
+  "mikoi": {
+    "execute": {
+      "my_command": {
+        "hostname": "example.com",
+        "port": "8080",
+        "proxy_protocol": true,
+        "command": "curl -f -H 'Host: example.com' localhost:{}/test"
+      }
+    }
+  }
+}
+```
+
+For more freedom, use the `mikoi_execute` resource directly.
+
 Usage
 -----
 ### mikoi::default
