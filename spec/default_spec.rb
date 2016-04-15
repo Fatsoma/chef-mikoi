@@ -1,8 +1,15 @@
 describe 'mikoi::default' do
   context 'with release install method' do
+    let(:file_cache_path) { '/var/chef/cache' }
+    let(:mikoi_version) { 'arbitrary_version' }
     let(:chef_run) do
-      ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '14.04') do |node|
+      ChefSpec::SoloRunner.new(
+        platform: 'ubuntu',
+        version: '14.04',
+        file_cache_path: file_cache_path
+      ) do |node|
         node.set.mikoi.install_method = 'release'
+        node.set.mikoi.version = mikoi_version
       end.converge(described_recipe)
     end
 
