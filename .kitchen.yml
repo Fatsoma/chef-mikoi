@@ -23,6 +23,7 @@ suites:
         install_method: release
   - name: go
     run_list:
+      - recipe[apt::default]
       - recipe[mikoi::default]
     attributes:
       mikoi:
