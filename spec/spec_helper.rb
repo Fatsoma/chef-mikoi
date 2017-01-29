@@ -14,4 +14,8 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
 
   config.role_path = File.expand_path('../roles', __FILE__)
+
+  # Default chefspec platform and platform version
+  config.platform = 'ubuntu'
+  config.version = '14.04'
 end
