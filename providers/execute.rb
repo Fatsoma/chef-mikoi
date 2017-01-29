@@ -39,7 +39,7 @@ end
 private
 
 def mikoi
-  ::File.join(node.mikoi.install_dir, 'mikoi')
+  ::File.join(node['mikoi']['install_dir'], 'mikoi')
 end
 
 def mikoi_command

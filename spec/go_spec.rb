@@ -7,8 +7,8 @@ describe 'mikoi::go' do
 
   cached(:cached_run) do
     ChefSpec::SoloRunner.new do |node|
-      node.set.mikoi.install_method = 'go'
-      node.set.go.version = go_version
+      node.normal['mikoi']['install_method'] = 'go'
+      node.normal['go']['version'] = go_version
     end.converge(described_recipe)
   end
   subject { cached_run }
