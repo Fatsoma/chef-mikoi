@@ -31,10 +31,10 @@ describe 'mikoi::release' do
       platform: platform,
       version: platform_version,
       file_cache_path: file_cache_path) do |node|
-        node.set.mikoi.install_method = 'release'
-        node.set.mikoi.version = mikoi_version
-        node.set.mikoi.release_url_template = release_url_template
-        node.set.mikoi.install_dir = install_dir
+        node.normal['mikoi']['install_method'] = 'release'
+        node.normal['mikoi']['version'] = mikoi_version
+        node.normal['mikoi']['release_url_template'] = release_url_template
+        node.normal['mikoi']['install_dir'] = install_dir
       end.converge(described_recipe)
   end
   let(:release_directory) do
@@ -62,7 +62,7 @@ describe 'mikoi::release' do
     let(:extract_command) { 'tar xzf' }
     cached(:cached_run) { chef_run }
 
-    it { expect(cached_run.node.os).to eq('linux') }
+    it { expect(cached_run.node['os']).to eq('linux') }
     include_examples 'release install'
   end
 
@@ -72,7 +72,7 @@ describe 'mikoi::release' do
     let(:release_file) { 'mikoi_darwin_amd64.zip' }
     cached(:cached_run) { chef_run }
 
-    it { expect(cached_run.node.os).to eq('darwin') }
+    it { expect(cached_run.node['os']).to eq('darwin') }
     include_examples 'release install'
   end
 
@@ -82,7 +82,7 @@ describe 'mikoi::release' do
     let(:release_file) { 'mikoi_freebsd_amd64.zip' }
     cached(:cached_run) { chef_run }
 
-    it { expect(cached_run.node.os).to eq('freebsd') }
+    it { expect(cached_run.node['os']).to eq('freebsd') }
     include_examples 'release install'
   end
 
@@ -92,7 +92,7 @@ describe 'mikoi::release' do
     let(:release_file) { 'mikoi_windows_386.zip' }
     cached(:cached_run) { chef_run }
 
-    it { expect(cached_run.node.os).to eq('windows') }
+    it { expect(cached_run.node['os']).to eq('windows') }
     include_examples 'release install'
   end
 end

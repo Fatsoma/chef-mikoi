@@ -3,7 +3,7 @@
 # Recipe:: default
 #
 
-case node.mikoi.install_method
+case node['mikoi']['install_method']
 when 'release'
   include_recipe 'mikoi::release'
 when 'go'

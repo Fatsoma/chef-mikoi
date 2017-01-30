@@ -1,4 +1,4 @@
-# Runs mikoi_execute resource for each item in node.mikoi.execute
+# Runs mikoi_execute resource for each item in node['mikoi']['execute']
 
 supported_attributes = %w(
   hostname
@@ -17,7 +17,7 @@ supported_attributes = %w(
   user
 ).freeze
 
-node.mikoi.execute.each do |name, attributes|
+node['mikoi']['execute'].each do |name, attributes|
   mikoi_execute name do
     supported_attributes.each do |att_name|
       send(att_name, attributes[att_name]) if attributes.key?(att_name)

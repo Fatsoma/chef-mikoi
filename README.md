@@ -6,8 +6,8 @@ Requirements
 ------------
 
 #### Chef
-Tested with 11.16.4.
-Should work with Chef 12
+Tested with 12.18.31
+Should still work with Chef 11
 
 #### cookbooks
 - `golang` - installs go programming language (only needed for `['mikoi']['install_method'] == 'go'`)

@@ -17,8 +17,8 @@ describe 'mikoi::execute' do
 
   let(:chef_run) do
     ChefSpec::SoloRunner.new(step_into: ['mikoi_execute']) do |node|
-      node.set.mikoi.install_dir = install_dir
-      node.set.mikoi.execute = execute_attributes
+      node.normal['mikoi']['install_dir'] = install_dir
+      node.normal['mikoi']['execute'] = execute_attributes
     end.converge(described_recipe)
   end
   subject { cached_run }

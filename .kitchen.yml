@@ -2,7 +2,7 @@
 driver:
   name: vagrant
 driver_config:
-  require_chef_omnibus: '11.16.4'
+  require_chef_omnibus: '12.18.31'
 
 provisioner:
   name: chef_solo
@@ -10,6 +10,9 @@ provisioner:
 platforms:
   - name: ubuntu-14.04
   - name: freebsd-10.2
+    driver:
+      synced_folders:
+        - [".", "/vagrant", "type: :rsync"]
 
 suites:
   - name: release
@@ -20,6 +23,7 @@ suites:
         install_method: release
   - name: go
     run_list:
+      - recipe[apt::default]
       - recipe[mikoi::default]
     attributes:
       mikoi:

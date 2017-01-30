@@ -8,8 +8,8 @@ describe 'mikoi::default' do
         version: '14.04',
         file_cache_path: file_cache_path
       ) do |node|
-        node.set.mikoi.install_method = 'release'
-        node.set.mikoi.version = mikoi_version
+        node.normal['mikoi']['install_method'] = 'release'
+        node.normal['mikoi']['version'] = mikoi_version
       end.converge(described_recipe)
     end
 
@@ -28,8 +28,8 @@ describe 'mikoi::default' do
 
     cached(:cached_run) do
       ChefSpec::SoloRunner.new do |node|
-        node.set.mikoi.install_method = 'go'
-        node.set.go.version = go_version
+        node.normal['mikoi']['install_method'] = 'go'
+        node.normal['go']['version'] = go_version
       end.converge(described_recipe)
     end
     subject { cached_run }
