@@ -4,7 +4,7 @@ maintainer_email 'bill.ruddock@fatsoma.com'
 license 'MIT'
 description 'Uses mikoi to enable connecting to server with Proxy Protocol'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '0.1.0'
+version '0.2.0'
 
 source_url 'https://github.com/Fatsoma/chef-mikoi'
 issues_url 'https://github.com/Fatsoma/chef-mikoi/issues'
