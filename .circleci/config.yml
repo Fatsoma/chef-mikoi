@@ -42,7 +42,7 @@ jobs:
           paths:
             - /home/circleci/vendor/chef-mikoi/bundle
 
-      - run: .circleci/spec-helpers.sh
+      - run: bash .circleci/spec-helpers.sh
 
       - restore_cache:
           keys:
