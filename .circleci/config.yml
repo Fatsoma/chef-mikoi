@@ -22,7 +22,7 @@ jobs:
     steps:
       - run:
           name: Allow app-local bundle configs
-          command: echo -e "#!/bin/sh\nunset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME\nbundle \"\$@\"" > /tmp/anybundle && sudo chmod +x /tmp/anybundle && sudo mv /tmp/anybundle /usr/local/bin/anybundle
+          command: echo -e '#!/bin/sh\nunset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME\nbundle "$@"' > /tmp/anybundle && sudo chmod +x /tmp/anybundle && sudo mv /tmp/anybundle /usr/local/bin/anybundle
 
       - checkout
       - run: mkdir -pv $CIRCLE_ARTIFACTS
@@ -91,7 +91,7 @@ jobs:
     steps:
       - run:
           name: Allow app-local bundle configs
-          command: echo -e "#!/bin/sh\nunset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME\nbundle \"\$@\"" > /tmp/anybundle && sudo chmod +x /tmp/anybundle && sudo mv /tmp/anybundle /usr/local/bin/anybundle
+          command: echo -e '#!/bin/sh\nunset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME\nbundle "$@"' > /tmp/anybundle && sudo chmod +x /tmp/anybundle && sudo mv /tmp/anybundle /usr/local/bin/anybundle
 
       - checkout
       - run: mkdir -pv $TEST_RESULTS
