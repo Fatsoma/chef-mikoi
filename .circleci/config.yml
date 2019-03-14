@@ -41,7 +41,7 @@ jobs:
             - ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-{{ .Revision }}
             - ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-
             - ruby-2.0-{{ arch }}-bundle-
-      - run: anybundle install --path=$VENDOR_PATH/chef-mikoi --jobs=4 --retry=3 && anybundle clean
+      - run: anybundle install --path=$VENDOR_PATH/chef-mikoi/bundle --jobs=4 --retry=3 && anybundle clean
       - save_cache:
           key: ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-{{ .Revision }}
           paths:
