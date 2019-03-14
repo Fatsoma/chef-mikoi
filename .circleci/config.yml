@@ -30,7 +30,11 @@ jobs:
       - run: mkdir -pv ~/.ssh
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - run: gem install bundler -v '>= 1.16.3, < 2.0'
+      - run:
+          command: |
+            unset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME \
+            && sudo gem install --no-user-install bundler -v '>= 1.16.3, < 2.0'
+      - run: anybundle --version
 
       - restore_cache:
           keys:
@@ -100,7 +104,11 @@ jobs:
       - run: mkdir -pv ~/.ssh
       - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - run: gem install bundler -v '>= 1.16.3, < 2.0'
+      - run:
+          command: |
+            unset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME \
+            && sudo gem install --no-user-install bundler -v '>= 1.16.3, < 2.0'
+      - run: anybundle --version
 
       - restore_cache:
           keys:
