@@ -1,0 +1,141 @@
+version: 2
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - syntax
+      - test
+
+jobs:
+  syntax:
+    docker:
+      - image: circleci/ruby:2.3
+
+    environment:
+      CIRCLE_ARTIFACTS: /tmp/artifacts
+      CI_FATSOMA_TARGET_DIRECTORY: /home/circleci/chef-mikoi
+      VENDOR_PATH: /home/circleci/vendor
+
+    working_directory: ~/chef-mikoi
+
+    steps:
+      - run:
+          name: Allow app-local bundle configs
+          command: echo -e '#!/bin/sh\nunset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME\nbundle "$@"' > /tmp/anybundle && sudo chmod +x /tmp/anybundle && sudo mv /tmp/anybundle /usr/local/bin/anybundle
+
+      - checkout
+      - run: mkdir -pv $CIRCLE_ARTIFACTS
+      - run: mkdir -pv $VENDOR_PATH
+      - run: mkdir -pv ~/.ssh
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - run:
+          command: |
+            unset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME \
+            && sudo gem install --force --no-user-install bundler -v '>= 1.16.3, < 2.0'
+      - run: anybundle --version
+
+      - restore_cache:
+          keys:
+            - ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-{{ .Revision }}
+            - ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-
+            - ruby-2.0-{{ arch }}-bundle-
+      - run: anybundle install --path=$VENDOR_PATH/chef-mikoi/bundle --jobs=4 --retry=3 && anybundle clean
+      - save_cache:
+          key: ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /home/circleci/vendor/chef-mikoi/bundle
+
+      - run: bash .circleci/spec-helpers.sh
+
+      - restore_cache:
+          keys:
+            - ruby-2.0-{{ arch }}-spec-helpers-bundle-{{ checksum "/home/circleci/v2-spec-helpers/.git/refs/heads/master" }}
+            - ruby-2.0-{{ arch }}-spec-helpers-bundle-
+      - run:
+          command: anybundle install --path $VENDOR_PATH/v2-spec-helpers/bundle --jobs=4 --retry=3 && anybundle clean
+          working_directory: ~/v2-spec-helpers
+      - save_cache:
+          key: ruby-2.0-{{ arch }}-spec-helpers-bundle-{{ checksum "/home/circleci/v2-spec-helpers/.git/refs/heads/master" }}
+          paths:
+            - /home/circleci/vendor/v2-spec-helpers/bundle
+
+      - run:
+          command: anybundle exec rake -f /home/circleci/v2-spec-helpers/Rakefile.ci fatsoma_spec_helpers:ci:setup:dependencies:versions
+          working_directory: ~/v2-spec-helpers
+      - run:
+          command: anybundle exec rake -f /home/circleci/v2-spec-helpers/Rakefile.ci fatsoma_spec_helpers:ci:setup:configs:checkers
+          working_directory: ~/v2-spec-helpers
+
+      - run:
+          command: anybundle exec rake -f /home/circleci/v2-spec-helpers/Rakefile.ci fatsoma_spec_helpers:ci:syntax_checkers:ruby
+          working_directory: ~/v2-spec-helpers
+      - run:
+          command: anybundle exec rake -f /home/circleci/v2-spec-helpers/Rakefile.ci fatsoma_spec_helpers:ci:vulnerability_scanners:all
+          working_directory: ~/v2-spec-helpers
+
+      - run: anybundle exec foodcritic -f any --progress .
+
+      - store_artifacts:
+          path: /tmp/artifacts
+
+  test:
+    docker:
+      - image: circleci/ruby:2.3
+
+    environment:
+      CIRCLE_ARTIFACTS: /tmp/artifacts
+      COVERAGE: true
+      TEST_RESULTS: /tmp/test-results
+      VENDOR_PATH: /home/circleci/vendor
+
+    working_directory: ~/chef-mikoi
+
+    steps:
+      - run:
+          name: Allow app-local bundle configs
+          command: echo -e '#!/bin/sh\nunset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME\nbundle "$@"' > /tmp/anybundle && sudo chmod +x /tmp/anybundle && sudo mv /tmp/anybundle /usr/local/bin/anybundle
+
+      - checkout
+      - run: mkdir -pv $TEST_RESULTS
+      - run: mkdir -pv $CIRCLE_ARTIFACTS
+      - run: mkdir -pv $VENDOR_PATH
+      - run: mkdir -pv ~/.ssh
+      - run: ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - run:
+          command: |
+            unset BUNDLE_APP_CONFIG BUNDLE_BIN BUNDLE_PATH GEM_HOME \
+            && sudo gem install --force --no-user-install bundler -v '>= 1.16.3, < 2.0'
+      - run: anybundle --version
+
+      - restore_cache:
+          keys:
+            - ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-{{ .Revision }}
+            - ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-
+            - ruby-2.0-{{ arch }}-bundle-
+      - run: anybundle install --path=$VENDOR_PATH/chef-mikoi/bundle --jobs=4 --retry=3 && anybundle clean
+      - save_cache:
+          key: ruby-2.0-{{ arch }}-bundle-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /home/circleci/vendor/chef-mikoi/bundle
+
+      - restore_cache:
+          keys:
+            - berks-{{ .Branch }}-{{ .Revision }}
+            - berks-{{ .Branch }}-
+            - berks-
+      - run: anybundle exec berks install
+      - save_cache:
+          key: berks-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /home/circleci/.berkshelf/cookbooks
+
+      - run: anybundle exec rspec --require rspec_junit_formatter --format RspecJunitFormatter --out $TEST_RESULTS/rspec/results.xml --format documentation spec
+
+      - store_test_results:
+          path: /tmp/test-results
+
+      - store_artifacts:
+          path: /tmp/artifacts
